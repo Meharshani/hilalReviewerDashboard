@@ -67,7 +67,7 @@ function ChangePassword() {
       newPassword: newPassword
     }
     SetNewPassword(data).then((result) => {
-      if (result.success) {
+      if (result?.statusCode===200) {
         setIsLoading(false);
         setInputData({
           password: '',
@@ -86,8 +86,8 @@ function ChangePassword() {
         openModal()
       } else {
         setIsLoading(false);
-        toast.error(result.message, {
-          position: toast.POSITION.TOP_CENTER,
+        toast.error(result?.message, {
+          position: "top-center",
           autoClose: 3000,
         });
       }

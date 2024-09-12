@@ -1,3 +1,4 @@
+import { url } from "../environment";
 import axios from "./axios";
 
 const handleCatch = (error) => {
@@ -45,56 +46,10 @@ const handleCatch = (error) => {
   }
   throw error;
 }
-export const GetTrendingCoins = async () => {
-  // const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      // 'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.get(`/cmc/trending-recent`, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-export const GetNews = async (count) => {
-  let endpoint = '';
-  if (count) {
-    endpoint = `news?page=1&limit=${count}`
-  }
-  else {
-    endpoint = `news?page=1&limit=24`
-  }
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      // 'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.get(`/cmc/${endpoint}`, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
 export const GetProfileData = async () => {
   const token = localStorage.getItem('user_token')
+  // console.log("getprofile working");
+  
   try {
 
     const headers = {
@@ -104,7 +59,7 @@ export const GetProfileData = async () => {
 
     };
 
-    const response = await axios.get(`/auth/profile`, {
+    const response = await axios.get(`${url}api/reviewer/admin/profile`, {
       headers
     });
 
@@ -126,7 +81,7 @@ export const UpdateProfileData = async (data) => {
 
     };
 
-    const response = await axios.put(`/auth/profile`, data, {
+    const response = await axios.put(`${url}api/reviewer/admin/profile`, data, {
       headers
     });
 
@@ -183,71 +138,7 @@ export const GetCmcSearchData = async (query) => {
   }
 };
 
-export const GetCmcData = async (shariahStatus, rank, percentageChange) => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      // 'Authorization': `Bearer ${token}`
-
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    let endpoint = '';
-    if (shariahStatus === 'All' && rank === null && percentageChange === 'All') {
-      endpoint = `/cmc/all`;
-    } else if (shariahStatus !== 'All' && rank === null && percentageChange === 'All') {
-      endpoint = `/cmc/all?shariahStatus=${shariahStatus}`;
-    } else if (shariahStatus === 'All' && rank !== null && percentageChange === 'All') {
-      endpoint = `/cmc/all?rank=${rank}`;
-    } else if (shariahStatus === 'All' && rank === null && percentageChange !== 'All') {
-      endpoint = `/cmc/all?percentageChange=${percentageChange}`;
-    } else if (shariahStatus !== 'All' && rank !== null && percentageChange === 'All') {
-      endpoint = `/cmc/all?shariahStatus=${shariahStatus}&rank=${rank}`;
-    } else if (shariahStatus !== 'All' && rank === null && percentageChange !== 'All') {
-      endpoint = `/cmc/all?shariahStatus=${shariahStatus}&percentageChange=${percentageChange}`;
-    } else if (shariahStatus === 'All' && rank !== null && percentageChange !== 'All') {
-      endpoint = `/cmc/all?rank=${rank}&percentageChange=${percentageChange}`;
-    } else {
-      endpoint = `/cmc/all?shariahStatus=${shariahStatus}&rank=${rank}&percentageChange=${percentageChange}`;
-    }
-
-    const response = await axios.get(endpoint, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-export const GetCoinData = async (id) => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      // 'Authorization': `Bearer ${token}`
-
-    };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-    const response = await axios.get(`/cmc/${id}`, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
+ 
 export const GetFavData = async () => {
   const token = localStorage.getItem('user_token')
   try {
@@ -324,7 +215,7 @@ export const SetNewPassword = async (data) => {
 
     };
 
-    const response = await axios.put(`/auth/password`, data, {
+    const response = await axios.put(`${url}api/reviewer/admin/password`, data, {
       headers
     });
 
@@ -334,162 +225,7 @@ export const SetNewPassword = async (data) => {
     handleCatch(error)
   }
 };
-
-export const ChatbotQuery = async (data) => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.post(`/chatbot/query`, data, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-
-export const GetAllChat = async () => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.get(`/chatbot/all`, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-export const GetChatHistory = async (id) => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.get(`/chatbot/chat-history/${id}`, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-
-export const DeleteChatHistory = async (allValue, data) => {
-  const token = localStorage.getItem('user_token')
-
-
-
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.put(`/chatbot/delete-chat?all=${allValue}`, data, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-
-export const UpdateChatSubject = async (id, data) => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.put(`/chatbot/chat/${id}`, data, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-
-export const GenrateReport = async (data) => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.post(`/report/token`, data, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
-
-export const GetReport = async (id) => {
-  const token = localStorage.getItem('user_token')
-  try {
-
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-
-    };
-
-    const response = await axios.get(`/report/view/${id}`, {
-      headers
-    });
-
-    return response.data;
-  }
-  catch (error) {
-    handleCatch(error)
-  }
-};
+ 
 export const UpdateUserSettings = async (data) => {
   const token = localStorage.getItem('user_token')
   try {

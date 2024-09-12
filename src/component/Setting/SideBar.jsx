@@ -76,7 +76,10 @@ const SideBar = () => {
           to="/" // Define the path for the route
           className={`flex items-center h-12 rounded-lg px-4 py-2 m-5 ${selected === 'Logout' ? 'bg-gradient-to-r from-purple-500 to-purple-700 text-white' : 'hover:bg-purple-100'
             }`}
-          // onClick={() => setSelected('Logout')}/
+          onClick={() => {
+               localStorage.removeItem('user_token');
+              localStorage.removeItem('user_Data');
+           }}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"

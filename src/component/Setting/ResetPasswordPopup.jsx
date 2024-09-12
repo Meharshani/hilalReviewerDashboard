@@ -8,7 +8,7 @@ export default function ResetPasswordPopup({ isOpen, closeModal }) {
     const handleLogout = () => {
         localStorage.removeItem('user_token');
         localStorage.removeItem('user_Data');
-        navigate('/sign-in')
+        navigate('/')
     }
     return (
         <>

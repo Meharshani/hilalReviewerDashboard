@@ -13,6 +13,7 @@ function Changepassword() {
             {/* Main Content */}
 
             <div className="flex-1  overflow-y-auto  ">
+ 
                 <div className="p-6 bg-white rounded-3xl m-10 h-[610px]">
                     <ChangePasswordComponent />
                 </div>
