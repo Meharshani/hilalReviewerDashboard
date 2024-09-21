@@ -3,11 +3,15 @@ import search2 from "../../assets/search2.png";
 import search from "../../assets/search.png";
 import logout from "../../assets/logout.svg";
 
-const SearchBar = () => {
+const SearchBar = ({ onSearch }) => {
   const [searchText, setSearchText] = useState('');
 
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
+    const value = e.target.value;
+
+    // setSearchText(value);
+    onSearch(value); 
   };
 
   return (

@@ -35,9 +35,13 @@ function Detailpage() {
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
-  console.log(editMode);
+  // console.log(editMode);
   const handleToggle = () => {
     setEditMode(!editMode);
+  };
+ 
+  const handleGoBack = () => {
+    navigate(-1); // This goes back to the previous screen
   };
   return (
     <div className="flex h-screen bg-gray-100">
@@ -78,7 +82,10 @@ function Detailpage() {
             <button className="bg-green-100 text-green-600 font-semibold py-1 px-4 rounded-md hover:bg-green-200 transition">
               Save Changes
             </button>
-            <button className="bg-red-100 text-red-600 font-semibold py-1 px-4 rounded-md hover:bg-red-200 transition">
+            <button className="bg-red-100 text-red-600 font-semibold py-1 px-4 rounded-md hover:bg-red-200 transition"
+                  onClick={handleGoBack}
+
+            >
               Close
             </button>
             <button className="bg-purple-600 text-white font-semibold py-1 px-4 rounded-md hover:bg-purple-700 transition">

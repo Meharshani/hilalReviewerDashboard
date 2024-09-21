@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import imglOGO from "../../assets/header11.png";
 import robo from "../../assets/robo.png";
 import homeicon from "../../assets/homeicon1.svg";
@@ -13,13 +13,22 @@ import editicon from "../../assets/editicon.svg";
 import lock from "../../assets/lock.svg";
 import Searchbar from "../../component/PasswordInput/Searchbar";
 import SideBar from "../../component/Setting/SideBar";
+import moment from 'moment';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Switch from 'react-switch'; // Import the switch component
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-
+const reportData = [
+  { name: 'not', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'In Progress', statusColor: 'text-yellow-500', symbol: 'bitcin', image: 'https://www.shutterstock.com/image-vector/abstract-boy-avtar-character-fiction-260nw-2168819879.jpg' },
+  { name: 'ETH', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'In Progress', statusColor: 'text-yellow-500', symbol: 'bitcin', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLxhrliIkY36R1SxpiIjIJvtRz8P1Y7vnLEg&s' },
+  { name: 'USDT', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'Pending', statusColor: 'text-red-500', symbol: 'bitcoin', image: btc },
+  { name: 'BNB', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'Pending', statusColor: 'text-red-500', symbol: 'bitcoin', image: btc },
+  { name: 'SOL', submission: '2/11/12 ', time: '11:23 pm', completion: '2/11/12 11:23 pm', status: 'Report Submitted', symbol: 'bitcoin', statusColor: 'text-green-500', image: btc },
+  { name: 'XRP', submission: '2/11/12 ', time: '11:23 pm', completion: '2/11/12 11:23 pm', status: 'Report Submitted', symbol: 'bitcoin', statusColor: 'text-green-500', image: btc },
+  { name: 'USDC', submission: '2/11/12 ', time: '11:23 pm', completion: '2/11/12 11:23 pm', status: 'Report Submitted', symbol: 'bitcoin', statusColor: 'text-green-500', image: btc },
+];
 
 
 
@@ -27,9 +36,55 @@ import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 const Dashboard = () => {
   const [selected, setSelected] = useState('Home');
   const [searchText, setSearchText] = useState('');
+  const [Data, setData] = useState([]);
+  const [stats, setstats] = useState([]);
+
+
   const navigate = useNavigate();
   const currentPath = window.location.pathname;
-  console.log(currentPath);
+  // console.log(Data?.logo);
+  useEffect(() => {
+    fetchData();
+  }, []);
+  const fetchData = () => {
+    const myHeaders = new Headers();
+    myHeaders.append(
+      "Authorization",
+      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MmI5N2RmMmZhYjU0NzQ4ODkwZmFjNCIsImlhdCI6MTcyNjk0Mzk0MiwiZXhwIjoxNzI5NTM1OTQyfQ.zRHwg0rrpIJj1OSHzN8ymbUXjKlya8GMPV2L-kwON7E"
+    );
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+
+    fetch(
+      "https://hilalfolio-client-dev-a0dpapfya6e2etax.uaenorth-01.azurewebsites.net/api/reviewer/report/reqs",
+      requestOptions
+    )
+      .then((response) => response.json()) // Assuming the API returns JSON
+      .then((result) => {
+        console.log(result);
+        setData(result?.body?.ODRs); // Save the result in state
+        setFilteredData(result?.body?.ODRs);
+        setstats(result?.body?.stats)
+
+
+      })
+      .catch((error) => console.error("Error:", error));
+  };
+  // Initialize variables for each stat and total count
+  const initialReviewCount = stats.find(stat => stat._id === "initial_review")?.count || 0;
+  const finalReviewCount = stats.find(stat => stat._id === "final_review")?.count || 0;
+  const completedCount = stats.find(stat => stat._id === "completed")?.count || 0;
+
+  // Calculate total count
+  const totalCount = stats.reduce((acc, stat) => acc + stat.count, 0);
+  // console.log("Initial Review Count:", initialReviewCount);
+  // console.log("Final Review Count:", finalReviewCount);
+  // console.log("Completed Count:", completedCount);
+  // console.log("Total Count:", totalCount);
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
@@ -43,15 +98,18 @@ const Dashboard = () => {
     fill: isSelected ? 'white' : 'black',
   });
 
-  const reportData = [
-    { name: 'not', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'In Progress', statusColor: 'text-yellow-500', symbol: 'bitcin', image: 'https://www.shutterstock.com/image-vector/abstract-boy-avtar-character-fiction-260nw-2168819879.jpg' },
-    { name: 'ETH', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'In Progress', statusColor: 'text-yellow-500', symbol: 'bitcin', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLxhrliIkY36R1SxpiIjIJvtRz8P1Y7vnLEg&s' },
-    { name: 'USDT', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'Pending', statusColor: 'text-red-500', symbol: 'bitcoin', image: btc },
-    { name: 'BNB', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'Pending', statusColor: 'text-red-500', symbol: 'bitcoin', image: btc },
-    { name: 'SOL', submission: '2/11/12 ', time: '11:23 pm', completion: '2/11/12 11:23 pm', status: 'Report Submitted', symbol: 'bitcoin', statusColor: 'text-green-500', image: btc },
-    { name: 'XRP', submission: '2/11/12 ', time: '11:23 pm', completion: '2/11/12 11:23 pm', status: 'Report Submitted', symbol: 'bitcoin', statusColor: 'text-green-500', image: btc },
-    { name: 'USDC', submission: '2/11/12 ', time: '11:23 pm', completion: '2/11/12 11:23 pm', status: 'Report Submitted', symbol: 'bitcoin', statusColor: 'text-green-500', image: btc },
-  ];
+
+  const [filteredData, setFilteredData] = useState([]);
+
+
+  const handleSearch = (searchQuery) => {
+    setFilteredData(Data)
+    const filtered = Data.filter((item) =>
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredData(filtered);
+  };
   const handleView = (report) => {
 
   }
@@ -127,7 +185,7 @@ const Dashboard = () => {
           </Link>
         </nav> */}
       </div>
-     
+
       {/* Main Content */}
       <div className="flex-1  overflow-y-auto  ">
         {
@@ -142,7 +200,7 @@ const Dashboard = () => {
                   >
                     <img src={bell} alt="notification" className=" h-7 " />
                   </button>
-                  <Searchbar />
+                  <Searchbar onSearch={handleSearch} />
 
                 </div>
               </div>
@@ -151,20 +209,20 @@ const Dashboard = () => {
               {/* Status Cards */}
               <div className="grid grid-cols-4 gap-6 my-6">
                 <div className="px-3 pb-1 bg-[#FEF4E8] rounded-lg border-[#FDDEB8] border">
-                  <h2 className="text-yellow-500 font-semibold py-2">In Progress</h2>
-                  <p className="text-2xl font-semibold">250</p>
+                  <h2 className="text-yellow-500 font-semibold py-2">Initial Review</h2>
+                  <p className="text-2xl font-semibold">{initialReviewCount}</p>
                 </div>
                 <div className="px-3 pb-1 rounded-lg border border-[#F0B0B0] bg-[#FAE6E6]">
-                  <h2 className="text-red-500 py-2 font-semibold ">Pending Reports</h2>
-                  <p className="text-2xl font-semibold ">300</p>
+                  <h2 className="text-red-500 py-2 font-semibold ">Final Review</h2>
+                  <p className="text-2xl font-semibold ">{finalReviewCount}</p>
                 </div>
                 <div className="px-3 pb-1 bg-[#E6F4E9] border border-[#B3DBBC] rounded-lg">
                   <h2 className="text-green-500 py-2 font-semibold">Completed</h2>
-                  <p className="text-2xl font-semibold">700</p>
+                  <p className="text-2xl font-semibold">{completedCount}</p>
                 </div>
                 <div className="px-3 pb-1 bg-[#F1EDF8] border border-[#D3C6E8] rounded-lg">
                   <h2 className="text-purple-500 py-2 font-semibold">Total Reports</h2>
-                  <p className="text-2xl font-semibold">1000</p>
+                  <p className="text-2xl font-semibold">{totalCount}</p>
                 </div>
               </div>
 
@@ -182,35 +240,50 @@ const Dashboard = () => {
                       </tr>
                     </thead>
                     <tbody className="text-[#000]">
-                      {reportData?.map((report, index) => (
-                        <tr key={index} className="h-20">
-                          <td className="py-2 px-3 border-b text-left flex items-center gap-2 h-20">
-                            <img src={report?.image} alt={report.name} className="w-8 h-8 rounded-full" />
-                            <div>
-                              <div className="font-medium text-sm">{report.name}</div>
-                              <div className="text-sm text-gray-500">{report?.symbol}</div>
-                            </div>
-                          </td>
-                          <td className="py-2 px-3 border-b text-left items-center gap-2">
-                            <div>
-                              <div className="font-medium text-sm">{report.submission}</div>
-                              <div className="text-sm text-gray-500">{report?.time}</div>
-                            </div>
-                          </td>
-                          <td className="py-2 px-3 border-b text-left">{report.completion}</td>
-                          <td className={`py-2 px-3 border-b text-left ${report.statusColor}`}>{report.status}</td>
-                          <td className="py-2 px-1 border-b text-left">
-                            <Link
-                            to="/home/Detailpage"
-                              className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
+                      {filteredData?.map((report, index) => {
+                        const createdAt = report?.createdAt;
+                        // console.log('create*********',createdAt);
+
+
+                        const date = new Date(createdAt);
+                        const formattedDate = date.toISOString().split('T')[0]; // Gets '2024-09-21'
+                        const formattedTime = moment(createdAt).utc().format('h:mm A'); // Converts to '8:10 PM'
+
+                        return (
+                          <tr key={index} className="h-20">
+                            <td className="py-2 px-3 border-b text-left flex items-center gap-2 h-20">
+                              <img src={report?.logo} alt={report?.name} className="w-8 h-8 rounded-full" />
+                              <div>
+                                <div className="font-medium text-sm">{report?.name}</div>
+                                <div className="text-sm text-gray-500">{report?.symbol}</div>
+                              </div>
+                            </td>
+                            <td className="py-2 px-3 border-b text-left items-center gap-2">
+                              <div>
+                                <div className="font-medium text-sm">{formattedDate}</div>
+                                <div className="text-sm text-gray-500">{formattedTime}</div>
+                              </div>
+                            </td>
+                            <td className="py-2 px-3 border-b text-left items-center gap-2">
+                              <div>
+                                <div className="font-medium text-sm">{report?.submission}</div>
+                                <div className="text-sm text-gray-500">{report?.time}</div>
+                              </div>
+                            </td>                          <td className={`py-2 px-3 border-b text-left ${report?.statusColor}`}>{report?.status}</td>
+                            <td className="py-2 px-1 border-b text-left">
+                              <Link
+                                to="/home/Detailpage"
+                                className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
                               // onClick={() => handleView(report)}
-                            >
-                              <img src={eye} alt={report.name} className="w-5 h-4 rounded-full" />
-                              <span className="hover:text-blue-700">View</span>
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
+                              >
+                                <img src={eye} alt={report.name} className="w-5 h-4 rounded-full" />
+                                <span className="hover:text-blue-700">View</span>
+                              </Link>
+                            </td>
+                          </tr>)
+                      }
+                      )
+                      }
                     </tbody>
                   </table>
                 </div>
