@@ -14,6 +14,7 @@ import lock from "../../assets/lock.svg";
 import Searchbar from "../../component/PasswordInput/Searchbar";
 import SideBar from "../../component/Setting/SideBar";
 import moment from 'moment';
+import { url } from '../../environment'
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -42,6 +43,8 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
   const currentPath = window.location.pathname;
+  const userData = localStorage.getItem("user_token");
+
   // console.log(Data?.logo);
   useEffect(() => {
     fetchData();
@@ -50,7 +53,7 @@ const Dashboard = () => {
     const myHeaders = new Headers();
     myHeaders.append(
       "Authorization",
-      "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY2MmI5N2RmMmZhYjU0NzQ4ODkwZmFjNCIsImlhdCI6MTcyNjk0Mzk0MiwiZXhwIjoxNzI5NTM1OTQyfQ.zRHwg0rrpIJj1OSHzN8ymbUXjKlya8GMPV2L-kwON7E"
+      `Bearer ${userData}`
     );
 
     const requestOptions = {
@@ -60,7 +63,7 @@ const Dashboard = () => {
     };
 
     fetch(
-      "https://hilalfolio-client-dev-a0dpapfya6e2etax.uaenorth-01.azurewebsites.net/api/reviewer/report/reqs",
+      `${url}api/reviewer/report/reqs`,
       requestOptions
     )
       .then((response) => response.json()) // Assuming the API returns JSON
