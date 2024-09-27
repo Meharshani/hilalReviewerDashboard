@@ -233,20 +233,22 @@ const OtpVerification = () => {
                 </div>
               </span> */}
               <div>
-                <h2>Verification Code</h2>
-
                 {/* Display text and handle click when it's time to resend */}
-                <p
-                  onClick={canResend ? handleResendCode : null} // Only clickable if canResend is true
-                  className={canResend ? 'text-blue-500 cursor-pointer' : ''} // Change style when clickable
-                  style={{ cursor: canResend ? 'pointer' : 'default' }}
-                >
-                  Didn't get the code? {resendTimer > 0 ? `Resend code in: ${resendTimer}` : "Resend Code!"}
-                </p>
+                <div className="flex-row">
+                  <span
+                    onClick={canResend ? handleResendCode : null} // Only clickable if canResend is true
+                    className={`text-[14px] ${canResend ? 'forget-text cursor-pointer' : ''}`} // Change style when clickable
+                    style={{ cursor: canResend ? 'pointer' : 'default' }}
+                  >
+                    <span className="text-[14px]">Didn't get the code? </span>
+                    {resendTimer > 0 ? `Resend code in: ${resendTimer}` : "Resend Code!"}
+                  </span>
+                </div>
 
                 {/* Code expiration timer */}
-                <p>Code will expire in: {formatTime(expireTimer)} mins</p>
+                <p className="text-[14px]">Code will expire in: {formatTime(expireTimer)} mins</p>
               </div>
+
               <span className="small-text !text-[#1F1F1F] !font-semibold mt-1">
                 Remember password?{" "}
                 <Link className="forget-text" to={"/login"}>
