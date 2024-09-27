@@ -29,6 +29,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const SignUp = () => {
   // const [email, setEmail] = useState("");
+  const userData = localStorage.getItem("user_token");
+// console.log("+++++++++++",userData);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showPassword1, setShowPassword1] = useState(false);
@@ -56,12 +58,11 @@ const SignUp = () => {
   };
 
   const submitLogin = (e) => {
-    setIsOpen(true)
-
-    let token = "Bearer " + localStorage.getItem("token");
+ 
+    let token = `Bearer ${userData}`;
 
     setLoading(true);
-    fetch(`${url}/api/auth/new-password`, {
+    fetch(`${url}/api/reviewer/admin/new-password`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -78,16 +79,15 @@ const SignUp = () => {
         if (res.success === true) {
           localStorage.setItem("token", res.body.token);
           toast.success(res.message, {
-            position: toast.POSITION.TOP_CENTER,
+            position: "top-center",
             autoClose: 3000,
           });
-          navigate("/home");
           setIsOpen(true)
 
           setLoading(false);
         } else {
           toast.error(res.message, {
-            position: toast.POSITION.TOP_CENTER,
+            position: "top-center",
             autoClose: 3000,
           });
           setLoading(false);
@@ -277,7 +277,7 @@ const SignUp = () => {
               </Formik>
               <span className="small-text !text-[#1F1F1F] !font-semibold mt-7">
                 Remember password?{" "}
-                <Link className="forget-text" to={"/sign-in"}>
+                <Link className="forget-text" to={"/"}>
                   Login
                 </Link>
               </span>

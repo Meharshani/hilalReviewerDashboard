@@ -23,6 +23,10 @@ const OtpVerification = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const receivedData = location.state;
+  const userData = localStorage.getItem("user_token");
+  const [resendTimer, setResendTimer] = useState(30); // Resend button timer
+  const [expireTimer, setExpireTimer] = useState(300); // Code expiration timer (5 mins)
+  const [canResend, setCanResend] = useState(false);
 
   // console.log(receivedData);
 
@@ -59,9 +63,9 @@ const OtpVerification = () => {
     if (otp.length < 6) {
       return;
     }
-    let token = "Bearer " + localStorage.getItem("token");
+    let token = `Bearer ${userData}`;
     setLoading(true);
-    fetch(`${url}/api/auth/verify`, {
+    fetch(`${url}/api/reviewer/admin/verify`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -85,17 +89,19 @@ const OtpVerification = () => {
                 localStorage.setItem("user_Data", JSON.stringify(data));
               })
           } else {
+            localStorage.setItem("user_token", res?.body?.token);
+
             navigate("/new-password");
           }
           toast.success(res.message, {
-            position: toast.POSITION.TOP_CENTER,
+            position: "top-center",
             autoClose: 3000,
           });
           setLoading(false);
         } else {
           setLoading(false);
           toast.error(res.message, {
-            position: toast.POSITION.TOP_CENTER,
+            position: "top-center",
             autoClose: 3000,
           });
           setOtp("");
@@ -108,7 +114,7 @@ const OtpVerification = () => {
 
   const sendOtp = (e) => {
     setLoading(true);
-    fetch(`${url}/api/auth/resend-otp`, {
+    fetch(`${url}/api/reviewer/admin/resend-otp`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -122,8 +128,11 @@ const OtpVerification = () => {
         if (res.success === true) {
           setSeconds(60);
           localStorage.setItem("token", res.body.token);
+          setResendTimer(30); // Reset the resend timer
+          setExpireTimer(300)
+          setCanResend(false); // Disable the button again for 30 secs
           toast.success(res.message, {
-            position: toast.POSITION.TOP_CENTER,
+            position: "top-center",
             autoClose: 3000,
           });
           setLoading(false);
@@ -133,7 +142,38 @@ const OtpVerification = () => {
         setLoading(false);
       });
   };
+  // Countdown for the resend button
+  useEffect(() => {
+    if (resendTimer > 0) {
+      const intervalId = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(intervalId);
+    } else {
+      setCanResend(true);
+    }
+  }, [resendTimer]);
 
+  // Countdown for code expiration
+  useEffect(() => {
+    if (expireTimer > 0) {
+      const intervalId = setInterval(() => {
+        setExpireTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(intervalId);
+    }
+  }, [expireTimer]);
+
+  // Convert expireTimer to mm:ss format
+  const formatTime = (timeInSeconds) => {
+    const minutes = Math.floor(timeInSeconds / 60);
+    const seconds = timeInSeconds % 60;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  };
+
+  const handleResendCode = () => {
+    sendOtp()
+  };
   return (
     <>
       <div className="flex h-screen">
@@ -192,6 +232,21 @@ const OtpVerification = () => {
                   )}
                 </div>
               </span> */}
+              <div>
+                <h2>Verification Code</h2>
+
+                {/* Display text and handle click when it's time to resend */}
+                <p
+                  onClick={canResend ? handleResendCode : null} // Only clickable if canResend is true
+                  className={canResend ? 'text-blue-500 cursor-pointer' : ''} // Change style when clickable
+                  style={{ cursor: canResend ? 'pointer' : 'default' }}
+                >
+                  Didn't get the code? {resendTimer > 0 ? `Resend code in: ${resendTimer}` : "Resend Code!"}
+                </p>
+
+                {/* Code expiration timer */}
+                <p>Code will expire in: {formatTime(expireTimer)} mins</p>
+              </div>
               <span className="small-text !text-[#1F1F1F] !font-semibold mt-1">
                 Remember password?{" "}
                 <Link className="forget-text" to={"/login"}>

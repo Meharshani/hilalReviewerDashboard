@@ -25,7 +25,9 @@ import "react-toastify/dist/ReactToastify.css";
 import avatar from "../../assets/avatar-img.svg";
 // import Footer from "../../Component/Footer,";
 import { CircularProgress } from "@mui/material";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import { useLocation } from 'react-router-dom';
+
 function Editpage() {
     const UserData = JSON.parse(localStorage.getItem("user_Data"));
     const [isLoading, setIsLoading] = useState(false);
@@ -38,16 +40,18 @@ function Editpage() {
     const [searchText, setSearchText] = useState('');
     const navigate = useNavigate();
     const currentPath = window.location.pathname;
+
     // const [Imgfile, setImgFile] = useState(null)
-    // console.log('-------------->', currentPath);
     const [userData, setUserData] = useState({
         fullName: "",
-         phoneNo: "",
-         email: "",
-     });
-// console.log("userData===>",userData);
+        phoneNo: "",
+        email: "",
+    });
+    // console.log("userData===>",userData);
 
     useEffect(() => {
+    // console.log('-------------->');
+
         fetchdata();
         // eslint-disable-next-line
     }, []);
@@ -55,12 +59,12 @@ function Editpage() {
         GetProfileData()
             .then((result) => {
                 const userDataCopy = { ...result?.body?.user }; // Create a copy of userData
-              
+
                 setUserData(userDataCopy); // Update user data with the modified dob
                 // const data = result?.body?.user;
                 // console.log(userDataCopy);
                 localStorage.setItem("user_Data", JSON.stringify(userDataCopy));
-                 setRefresh((prev) => !prev);
+                setRefresh((prev) => !prev);
             })
             .catch((err) => {
                 console.log(err.message);
@@ -163,13 +167,13 @@ function Editpage() {
             <SideBar></SideBar>
             {/* Main Content */}
             <div className="flex-1  overflow-y-auto  ">
-            <ToastContainer />
+                <ToastContainer />
 
                 <div className="p-6 bg-white rounded-3xl m-10 h-[610px]">
                     <form onSubmit={HandleSubmit} className="h-full">
                         <div className="border-[1px] border-[#fff] rounded-3xl   bg-[#fff] h-full">
                             <h2 className="text-2xl font-bold tracking-tight text-[#0C0F14] sm:text-32">
-                                Edit Profile
+                                Edit Profile 
                             </h2>
                             <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
                                 {imageLodaing ? (
@@ -251,7 +255,7 @@ function Editpage() {
                                 <div className="text-sm font-semibold flex flex-col lg:w-1/2">
                                     <label htmlFor="">Email</label>
                                     <input
-                                    disabled ={true}
+                                        disabled={true}
                                         // value={userData?.email}
                                         defaultValue={userData?.email}
                                         name="email"

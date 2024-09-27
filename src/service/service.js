@@ -46,10 +46,11 @@ const handleCatch = (error) => {
   }
   throw error;
 }
+
 export const GetProfileData = async () => {
   const token = localStorage.getItem('user_token')
   // console.log("getprofile working");
-  
+
   try {
 
     const headers = {
@@ -59,7 +60,7 @@ export const GetProfileData = async () => {
 
     };
 
-    const response = await axios.get(`${url}api/reviewer/admin/profile`, {
+    const response = await axios.get(`api/reviewer/admin/profile`, {
       headers
     });
 
@@ -81,7 +82,7 @@ export const UpdateProfileData = async (data) => {
 
     };
 
-    const response = await axios.put(`${url}api/reviewer/admin/profile`, data, {
+    const response = await axios.put(`api/reviewer/admin/profile`, data, {
       headers
     });
 
@@ -138,7 +139,7 @@ export const GetCmcSearchData = async (query) => {
   }
 };
 
- 
+
 export const GetFavData = async () => {
   const token = localStorage.getItem('user_token')
   try {
@@ -215,7 +216,7 @@ export const SetNewPassword = async (data) => {
 
     };
 
-    const response = await axios.put(`${url}api/reviewer/admin/password`, data, {
+    const response = await axios.put(`api/reviewer/admin/password`, data, {
       headers
     });
 
@@ -225,7 +226,7 @@ export const SetNewPassword = async (data) => {
     handleCatch(error)
   }
 };
- 
+
 export const UpdateUserSettings = async (data) => {
   const token = localStorage.getItem('user_token')
   try {
@@ -237,7 +238,8 @@ export const UpdateUserSettings = async (data) => {
 
     };
 
-    const response = await axios.put(`/user-setting/save-chat-history`, data, {
+    const response = await axios.put(`/user-setting/save-chat-history`, data,
+       {
       headers
     });
 
@@ -245,5 +247,59 @@ export const UpdateUserSettings = async (data) => {
   }
   catch (error) {
     handleCatch(error)
+  }
+};
+
+// Function to submit the report with status and report content
+export const submitReport = async (status, report, reportId) => {
+  const token = localStorage.getItem('user_token')
+
+  try {
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    const data = {
+      status: status, // Status variable
+      report: report  // Report in Markdown format
+    };
+
+    const response = await axios.put(
+      `api/reviewer/report/reqs/${reportId}`,
+      data,
+      { headers }
+    );
+
+    return response.data;
+  } catch (error) {
+    handleCatch(error);
+  }
+};
+
+// Function to save the report without the status
+export const reportSave = async (report, reportId) => {
+  const token = localStorage.getItem('user_token')
+
+  try {
+    const headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
+
+    const data = {
+      report: report  // Only report variable is sent
+    };
+
+    const response = await axios.put(
+      `api/reviewer/report/reqs/${reportId}`,data,
+      { headers }
+    );
+
+    return response.data;
+  } catch (error) {
+    handleCatch(error);
   }
 };

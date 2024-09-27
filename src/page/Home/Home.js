@@ -48,6 +48,7 @@ const Dashboard = () => {
   // console.log(Data?.logo);
   useEffect(() => {
     fetchData();
+    
   }, []);
   const fetchData = () => {
     const myHeaders = new Headers();
@@ -114,6 +115,10 @@ const Dashboard = () => {
     setFilteredData(filtered);
   };
   const handleView = (report) => {
+
+    navigate("/home/detailpage", {
+      state: { reportId: report._id, reportName: report?.name },
+    });
 
   }
 
@@ -274,14 +279,13 @@ const Dashboard = () => {
                               </div>
                             </td>                          <td className={`py-2 px-3 border-b text-left ${report?.statusColor}`}>{report?.status}</td>
                             <td className="py-2 px-1 border-b text-left">
-                              <Link
-                                to="/home/Detailpage"
+                              <div
                                 className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
-                              // onClick={() => handleView(report)}
+                                onClick={() => handleView(report)}
                               >
                                 <img src={eye} alt={report.name} className="w-5 h-4 rounded-full" />
                                 <span className="hover:text-blue-700">View</span>
-                              </Link>
+                              </div>
                             </td>
                           </tr>)
                       }

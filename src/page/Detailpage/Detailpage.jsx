@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import imglOGO from "../../assets/header11.png";
 import robo from "../../assets/robo.png";
 import homeicon from "../../assets/homeicon1.svg";
@@ -20,31 +20,98 @@ import Editor2 from '../../component/QuillEditor/Editor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Switch from 'react-switch'; // Import the switch component
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { url } from '../../environment';
+import {
+  reportSave,
+  submitReport
+
+} from "../../service/service";
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 function Detailpage() {
   const [selected, setSelected] = useState('Settings');
-  const [SelectedSetting, setSelectedSetting] = useState('Settings');
-  const [searchText, setSearchText] = useState('');
+  const [reportdata, setReportdata] = useState([]);
   const [editMode, setEditMode] = useState(false);
+  const location = useLocation();
+  const { reportId, reportName } = location?.state || {}; // Destructure the passed data
+  const userData = localStorage.getItem("user_token");
+  const [markdown, setMarkdown] = useState('');
+  const [status, setStatus] = useState('initial_review');
+  const [counter, setCounter] = useState(0);       // Counter for triggering data re-fetch
 
   const navigate = useNavigate();
   const currentPath = window.location.pathname;
-  //   console.log(currentPath);
-  const handleSearchChange = (e) => {
-    setSearchText(e.target.value);
-  };
+
   // console.log(editMode);
   const handleToggle = () => {
     setEditMode(!editMode);
   };
- 
+
   const handleGoBack = () => {
     navigate(-1); // This goes back to the previous screen
   };
+  useEffect(() => {
+    fetchReportData(reportId);
+
+  }, [counter]);
+  const fetchReportData = async (reportId) => {
+    const myHeaders = new Headers();
+    myHeaders.append("Authorization", `Bearer ${userData}`);
+
+    const requestOptions = {
+      method: "GET",
+      headers: myHeaders,
+      redirect: "follow"
+    };
+
+    try {
+      const response = await fetch(`${url}api/reviewer/report/reqs/${reportId}`, requestOptions);
+      const result = await response.json(); // Assuming the API returns JSON data
+      // console.log("=========>",result?.body.ODR);
+      setReportdata(result?.body?.ODR)
+      return result;
+    } catch (error) {
+      console.error('Error fetching report data:', error);
+    }
+  };
+  // console.log("--->++++,",markdown);
+  const handleReportSave = async () => {
+    try {
+      // Call the reportSave function and pass the token and report content
+      const result = await reportSave(markdown, reportId);
+      if (result?.success === true) {
+        setCounter(prevCounter => prevCounter + 1); // Increment the counter
+        toast.success('Report saved successfully!', { position: "top-center" }); 
+      }
+      console.log('Report saved:', result);
+    } catch (error) {
+      console.error('Error saving report:', error);
+      toast.error('Failed to save the report.', { position: "top-center" }); // Display error toast
+
+    }
+  };
+  const handleReportSubmit = async () => {
+    try {
+      // Call the reportSave function and pass the token and report content
+      const result = await submitReport(status, markdown, reportId);
+      if (result?.success === true) {
+        setCounter(prevCounter => prevCounter + 1); // Increment the counter
+        toast.success('Report submitted status successfully!', { position: "top-center" }); // Display success toast
+
+      }
+      console.log('Report saved:', result);
+    } catch (error) {
+      console.error('Error saving report:', error);
+      toast.error('Failed to submit status the report.', { position: "top-center" }); // Display error toast
+
+    }
+  };
   return (
     <div className="flex h-screen bg-gray-100">
+       <ToastContainer />
       {/* Sidebar */}
       <SideBar></SideBar>
       {/* Main Content */}
@@ -52,7 +119,7 @@ function Detailpage() {
       <div className="flex-1  overflow-y-auto  ">
         <div className="p-6 bg-white rounded-3xl m-10 ">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Detailpage</h1>
+            <h1 className="text-2xl font-bold">Detail Page</h1>
             <div className="flex items-center gap-4">
               <button
                 className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
@@ -79,23 +146,28 @@ function Detailpage() {
                 width={40}
               />
             </label>
-            <button className="bg-green-100 text-green-600 font-semibold py-1 px-4 rounded-md hover:bg-green-200 transition">
+            <button className="bg-green-100 text-green-600 font-semibold py-1 px-4 rounded-md hover:bg-green-200 transition"
+              onClick={handleReportSave} // save report 
+
+            >
               Save Changes
             </button>
             <button className="bg-red-100 text-red-600 font-semibold py-1 px-4 rounded-md hover:bg-red-200 transition"
-                  onClick={handleGoBack}
+              onClick={handleGoBack}
 
             >
               Close
             </button>
-            <button className="bg-purple-600 text-white font-semibold py-1 px-4 rounded-md hover:bg-purple-700 transition">
+            <button className="bg-purple-600 text-white font-semibold py-1 px-4 rounded-md hover:bg-purple-700 transition"
+              onClick={handleReportSubmit}
+            >
               Submit Report
             </button>
           </div>
           <div>
             {/* <TextEditor editMode={editMode} /> */}
-            <Editor2 editMode={editMode} />
-           </div>
+            <Editor2 editMode={editMode} reportdata={reportdata} setMarkdown={setMarkdown} />
+          </div>
 
         </div>
 

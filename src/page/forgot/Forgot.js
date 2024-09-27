@@ -31,14 +31,11 @@ const ForgetPassword = () => {
         sendOtp(values);
         actions.setSubmitting(false);
     };
-
     const sendOtp = (e) => {
-        navigate("/otp", {
-            state: { email: e.email, component: "forget" },
-        });
         console.log(e);
         setLoading(true);
-        fetch(`${url}/api/auth/forgot-password`, {
+
+        fetch(`${url}/api/reviewer/admin/forgot-password`, {
             method: "POST",
             headers: {
                 "content-type": "application/json",
@@ -50,31 +47,82 @@ const ForgetPassword = () => {
         })
             .then((response) => response.json())
             .then((res) => {
-              
-                if (res.success === true) {
+                console.log("API Response:", res); // Log the entire response to see its structure
+
+                if (res?.success === true) { // Check if res.success exists and is true
                     localStorage.setItem("user_token", res.body.token);
 
                     toast.success(res.message, {
-                        position: toast.POSITION.TOP_CENTER,
+                        position: "top-center",
                         autoClose: 3000,
                     });
+
                     navigate("/otp", {
                         state: { email: e.email, component: "forget" },
                     });
 
                     setLoading(false);
                 } else {
-                    toast.error(res.message, {
-                        position: toast.POSITION.TOP_CENTER,
+                    // Handle case where success is false or not present
+                    toast.error(res.message || "Something went wrong", {
+                        position: "top-center",
                         autoClose: 3000,
                     });
                     setLoading(false);
                 }
             })
-            .catch(() => {
+            .catch((error) => {
+                console.error("Error fetching OTP:", error); // Log any errors
+                toast.error("Failed to send OTP. Please try again later.", {
+                    position: "top-center",
+                    autoClose: 3000,
+                });
                 setLoading(false);
             });
     };
+
+    // const sendOtp = (e) => {
+
+    //     console.log(e);
+    //     setLoading(true);
+    //     fetch(`${url}/api/reviewer/admin/forgot-password1`, {
+    //         method: "POST",
+    //         headers: {
+    //             "content-type": "application/json",
+    //             accept: "application/json",
+    //         },
+    //         body: JSON.stringify({
+    //             email: e.email,
+    //         }),
+    //     })
+    //         .then((response) => response.json())
+    //         .then((res) => {
+
+    //             if (res.success === true) {
+    //                 localStorage.setItem("user_token", res.body.token);
+
+    //                 toast.success(res.message, {
+    //                     position: "top-center",
+    //                     autoClose: 3000,
+    //                 });
+
+    //                 navigate("/otp", {
+    //                     state: { email: e.email, component: "forget" },
+    //                 });
+
+    //                 setLoading(false);
+    //             } else {
+    //                 toast.error(res.message, {
+    //                     position: "top-center",
+    //                     autoClose: 3000,
+    //                 });
+    //                 setLoading(false);
+    //             }
+    //         })
+    //         .catch(() => {
+    //             setLoading(false);
+    //         });
+    // };
     return (
         <>
             <div className="flex h-screen">
