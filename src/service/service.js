@@ -104,7 +104,7 @@ export const UpdateProfileImage = async (imageFile) => {
       'Authorization': `Bearer ${token}`
     };
 
-    const response = await axios.post(`/auth/profile-image`, formData, {
+    const response = await axios.post(`api/reviewer/admin/profile-image`, formData, {
       headers
     });
 

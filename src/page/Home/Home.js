@@ -21,6 +21,7 @@ import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Switch from 'react-switch'; // Import the switch component
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import { Token } from '@mui/icons-material';
 const reportData = [
   { name: 'not', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'In Progress', statusColor: 'text-yellow-500', symbol: 'bitcin', image: 'https://www.shutterstock.com/image-vector/abstract-boy-avtar-character-fiction-260nw-2168819879.jpg' },
   { name: 'ETH', submission: '2/11/12 ', time: '11:23 pm', completion: '-', status: 'In Progress', statusColor: 'text-yellow-500', symbol: 'bitcin', image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLxhrliIkY36R1SxpiIjIJvtRz8P1Y7vnLEg&s' },
@@ -48,7 +49,7 @@ const Dashboard = () => {
   // console.log(Data?.logo);
   useEffect(() => {
     fetchData();
-    
+
   }, []);
   const fetchData = () => {
     const myHeaders = new Headers();
@@ -82,10 +83,11 @@ const Dashboard = () => {
   const initialReviewCount = stats.find(stat => stat._id === "initial_review")?.count || 0;
   const finalReviewCount = stats.find(stat => stat._id === "final_review")?.count || 0;
   const completedCount = stats.find(stat => stat._id === "completed")?.count || 0;
+  const report_generationcount = stats.find(stat => stat._id === "report_generation")?.count || 0;
 
   // Calculate total count
   const totalCount = stats.reduce((acc, stat) => acc + stat.count, 0);
-  // console.log("Initial Review Count:", initialReviewCount);
+  console.log("Initial Review Count:", userData);
   // console.log("Final Review Count:", finalReviewCount);
   // console.log("Completed Count:", completedCount);
   // console.log("Total Count:", totalCount);
@@ -215,7 +217,7 @@ const Dashboard = () => {
               {/* <h1 className="text-2xl font-bold">Home</h1> */}
 
               {/* Status Cards */}
-              <div className="grid grid-cols-4 gap-6 my-6">
+              <div className="grid grid-cols-5 gap-6 my-6">
                 <div className="px-3 pb-1 bg-[#FEF4E8] rounded-lg border-[#FDDEB8] border">
                   <h2 className="text-yellow-500 font-semibold py-2">Initial Review</h2>
                   <p className="text-2xl font-semibold">{initialReviewCount}</p>
@@ -223,6 +225,11 @@ const Dashboard = () => {
                 <div className="px-3 pb-1 rounded-lg border border-[#F0B0B0] bg-[#FAE6E6]">
                   <h2 className="text-red-500 py-2 font-semibold ">Final Review</h2>
                   <p className="text-2xl font-semibold ">{finalReviewCount}</p>
+                </div>
+                <div className="px-3 pb-1 bg-[#E6F4E9] border border-[#B3DBBC] rounded-lg">
+                  <h2 className="text-green-500 py-2 font-semibold">Report Generation	
+                  </h2>
+                  <p className="text-2xl font-semibold">{report_generationcount}</p>
                 </div>
                 <div className="px-3 pb-1 bg-[#E6F4E9] border border-[#B3DBBC] rounded-lg">
                   <h2 className="text-green-500 py-2 font-semibold">Completed</h2>

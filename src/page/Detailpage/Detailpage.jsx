@@ -39,7 +39,7 @@ function Detailpage() {
   const { reportId, reportName } = location?.state || {}; // Destructure the passed data
   const userData = localStorage.getItem("user_token");
   const [markdown, setMarkdown] = useState('');
-  const [status, setStatus] = useState('initial_review');
+  const [status, setStatus] = useState('completed');
   const [counter, setCounter] = useState(0);       // Counter for triggering data re-fetch
 
   const navigate = useNavigate();

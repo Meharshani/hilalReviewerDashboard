@@ -137,7 +137,7 @@ function Editpage() {
                     setimageLodaing(true);
                     UpdateProfileImage(file).then((result) => {
                         setimageLodaing(false);
-                        if (result.success) {
+                        if (result?.success) {
                             setUserImg(reader.result);
                             fetchdata();
                         } else {
