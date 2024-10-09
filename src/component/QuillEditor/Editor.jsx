@@ -50,30 +50,57 @@ const Editor = ({ editMode, reportdata, setMarkdown }) => {
     'direction', 'align',
     'link', 'image', 'video', 'formula',
   ];
-
-  // Function to compare original and edited reports and highlight changes
   function compareReports(originalReport, editedReport) {
     // Check if inputs are strings and are defined
     if (typeof originalReport !== 'string' || typeof editedReport !== 'string') {
       return ''; // Return empty if the input is invalid
     }
-
+  
     const diff = Diff.diffWords(originalReport, editedReport);
-
+  
     let result = '';
-
+  
     diff.forEach(part => {
       if (part.added) {
-        result += `<span style="color: green;">${part.value}</span>`;
+        // GitHub-style for added text (green background, + sign)
+        result += `<span style="display: block; background-color: #e6ffed; color: #22863a; padding: 0.2em 0.4em;">+${part.value}</span>`;
       } else if (part.removed) {
-        result += `<span style="color: red;">${part.value}</span>`;
+        // GitHub-style for removed text (red background, - sign)
+        result += `<span style="display: block; background-color: #ffeef0; color: #cb2431; padding: 0.2em 0.4em;">-${part.value}</span>`;
       } else {
-        result += part.value;
+        // Unchanged text remains the same (no highlight)
+        result += `<span style="display: block; padding: 0.2em 0.4em;">${part.value}</span>`;
       }
     });
-
+  
     return result;
   }
+  
+  
+  // Function to compare original and edited reports and highlight changes
+  // orignal
+  // function compareReports(originalReport, editedReport) {
+  //   // Check if inputs are strings and are defined
+  //   if (typeof originalReport !== 'string' || typeof editedReport !== 'string') {
+  //     return ''; // Return empty if the input is invalid
+  //   }
+
+  //   const diff = Diff.diffWords(originalReport, editedReport);
+
+  //   let result = '';
+
+  //   diff.forEach(part => {
+  //     if (part.added) {
+  //       result += `<span style="color: green;">${part.value}</span>`;
+  //     } else if (part.removed) {
+  //       result += `<span style="color: red;">${part.value}</span>`;
+  //     } else {
+  //       result += part.value;
+  //     }
+  //   });
+
+  //   return result;
+  // }
 
   // Compare the reports and get the highlighted diff
   const comparedResult = compareReports(reportdata?.report, curretmarkdown);
