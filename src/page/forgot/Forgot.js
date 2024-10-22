@@ -137,8 +137,8 @@ const ForgetPassword = () => {
                         <div className="flex flex-col justify-center items-center mt-3 text-center ">
                             <p className="Welcome-text mb-3">Forgot password</p>
                             <span className="small-text">
-                                It was popularised in the 1960s with the
-                                <br /> release of Lorem Ipsum.
+                            Please enter your registered email to receive 
+                                <br /> the OTP to reset your password.
                             </span>
 
                             <Formik

@@ -12,6 +12,8 @@ const Editor = ({ editMode, reportdata, setMarkdown }) => {
 
   // Convert the fetched markdown report to HTML when report data is loaded
   useEffect(() => {
+    // console.log(reportdata);
+    
     if (reportdata?.report) {
       const initialHtml = marked(reportdata.report); // Convert Markdown to HTML
       setText(initialHtml); // Set the converted HTML in the editor

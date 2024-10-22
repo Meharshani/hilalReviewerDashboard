@@ -41,16 +41,15 @@ function Setting() {
             <div className="flex-1  overflow-y-auto  ">
                 <div className="p-6 bg-white rounded-3xl m-10 h-[610px]">
                     <div className="items-center">
-                        <h1 className="text-2xl font-bold">Settings</h1
-                        >
-                        <Link to="/settings/editpage" className="flex items-center gap-3 mt-5 text-black font-semibold rounded-md hover:bg-purple-100 transition"
+                        <h1 className="text-2xl font-bold">Settings</h1>
+                        <Link to="/settings/editpage" className="flex items-center gap-3 mt-5 text-[#49454F] font-semibold rounded-md hover:bg-purple-100 transition"
                         // onClick={() => screenselect('editpage')}
 
                         >
                             <img src={editicon} alt="Alert icon" className="w-5 h-5" />
                             <span>Edit Profile</span>
                         </Link>
-                        <Link to="/settings/changepassword" className="flex items-center gap-3 mt-5 text-black font-semibold rounded-md hover:bg-purple-100 transition">
+                        <Link to="/settings/changepassword" className="flex items-center gap-3 mt-5 text-[#49454F] font-semibold rounded-md hover:bg-purple-100 transition">
                             <img src={lock} alt="Alert icon" className="w-5 h-5" />
                             <span>Change Password</span>
                         </Link>

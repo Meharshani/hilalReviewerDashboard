@@ -84,7 +84,7 @@ function Detailpage() {
       const result = await reportSave(markdown, reportId);
       if (result?.success === true) {
         setCounter(prevCounter => prevCounter + 1); // Increment the counter
-        toast.success('Report saved successfully!', { position: "top-center" }); 
+        toast.success('Report saved successfully!', { position: "top-center" });
       }
       console.log('Report saved:', result);
     } catch (error) {
@@ -111,7 +111,7 @@ function Detailpage() {
   };
   return (
     <div className="flex h-screen bg-gray-100">
-       <ToastContainer />
+      <ToastContainer />
       {/* Sidebar */}
       <SideBar></SideBar>
       {/* Main Content */}
@@ -119,7 +119,11 @@ function Detailpage() {
       <div className="flex-1  overflow-y-auto  ">
         <div className="p-6 bg-white rounded-3xl m-10 ">
           <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold">Detail Page</h1>
+            <div className="flex flex-row items-center space-x-2 ml-2">
+              <h1 className="text-2xl font-bold">{reportdata?.name}</h1>
+              <h1 className="text-sm mt-2 text-gray-500">{reportdata?.symbol}</h1>
+            </div>
+
             <div className="flex items-center gap-4">
               <button
                 className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
@@ -131,7 +135,7 @@ function Detailpage() {
 
             </div>
           </div>
-          <div className="flex items-center justify-end py-4 gap-2">
+          <div className="flex flex-wrap items-center justify-end py-4 gap-2 w-full">
             <label className="text-gray-700 flex items-center gap-2">
               Edit
               <Switch
@@ -146,24 +150,34 @@ function Detailpage() {
                 width={40}
               />
             </label>
-            <button className="bg-green-100 text-green-600 font-semibold py-1 px-4 rounded-md hover:bg-green-200 transition"
-              onClick={handleReportSave} // save report 
 
+            <button className=" border border-[#098C26] text-[#098C26] font-semibold py-1 px-4 rounded-md hover:bg-green-200 transition w-full sm:w-auto"
+              onClick={handleReportSave}
             >
               Save Changes
             </button>
-            <button className="bg-red-100 text-red-600 font-semibold py-1 px-4 rounded-md hover:bg-red-200 transition"
-              onClick={handleGoBack}
 
-            >
+            <button className="  border border-[#CD0000] text-[#CD0000] font-semibold py-1 px-4 rounded-md hover:bg-red-200 transition w-full sm:w-auto"
+              onClick={handleGoBack}>
               Close
             </button>
-            <button className="bg-purple-600 text-white font-semibold py-1 px-4 rounded-md hover:bg-purple-700 transition"
+            <button
+              className="text-white font-semibold py-1 px-4 rounded-md hover:bg-purple-700 transition w-full sm:w-auto"
+              style={{
+                background: 'linear-gradient(95.15deg, #7147B4 0%, #423CAC 112.53%)'
+              }}
               onClick={handleReportSubmit}
+
             >
               Submit Report
             </button>
+
+            {/* 
+            <button className="bg-purple-600 text-white font-semibold py-1 px-4 rounded-md hover:bg-purple-700 transition w-full sm:w-auto">
+              Submit Report
+            </button> */}
           </div>
+
           <div>
             {/* <TextEditor editMode={editMode} /> */}
             <Editor2 editMode={editMode} reportdata={reportdata} setMarkdown={setMarkdown} />

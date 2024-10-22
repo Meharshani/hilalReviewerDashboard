@@ -200,24 +200,53 @@ const Dashboard = () => {
       <div className="flex-1  overflow-y-auto  ">
         {
           selected === 'Home' && (
-            <div className="flex-1 p-6  bg-white rounded-3xl	  m-10 	">
-              <div className="flex justify-between items-center">
+            <div className="flex-1 p-6 bg-white rounded-3xl m-10">
+              <div className="flex justify-between items-center flex-wrap gap-4">
                 <h1 className="text-2xl font-bold">Home</h1>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 flex-wrap">
                   <button
                     className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
-                  // onClick={() => handleView(report)}
                   >
-                    <img src={bell} alt="notification" className=" h-7 " />
+                    <img src={bell} alt="notification" className="h-7" />
                   </button>
-                  <Searchbar onSearch={handleSearch} />
 
+                  {/* Make the search bar width responsive */}
+                  <Searchbar
+                    onSearch={handleSearch}
+                    className="w-full sm:w-64 md:w-80 lg:w-96"
+                  />
                 </div>
               </div>
+
               {/* <h1 className="text-2xl font-bold">Home</h1> */}
 
               {/* Status Cards */}
-              <div className="grid grid-cols-5 gap-6 my-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 my-6 mt-14">
+                <div className="px-3 pb-1 bg-[#FEF4E8] rounded-lg border-[#FDDEB8] border">
+                  <h2 className="text-yellow-500 font-semibold py-2">Initial Review</h2>
+                  <p className="text-2xl font-semibold">{initialReviewCount}</p>
+                </div>
+                <div className="px-3 pb-1 rounded-lg border border-[#F0B0B0] bg-[#FAE6E6]">
+                  <h2 className="text-red-500 py-2 font-semibold ">Final Review</h2>
+                  <p className="text-2xl font-semibold ">{finalReviewCount}</p>
+                </div>
+                <div className="px-3 pb-1 bg-[#e9e9e9] border border-[#ABA3B5] rounded-lg">
+                  <h2 className="text-gray-500 py-2 font-semibold">Report Generation
+                  </h2>
+                  <p className="text-2xl font-semibold">{report_generationcount}</p>
+                </div>
+                <div className="px-3 pb-1 bg-[#E6F4E9] border border-[#B3DBBC] rounded-lg">
+                  <h2 className="text-green-500 py-2 font-semibold">Completed</h2>
+                  <p className="text-2xl font-semibold">{completedCount}</p>
+                </div>
+                <div className="px-3 pb-1 bg-[#F1EDF8] border border-[#D3C6E8] rounded-lg">
+                  <h2 className="text-purple-500 py-2 font-semibold">Total Reports</h2>
+                  <p className="text-2xl font-semibold">{totalCount}</p>
+                </div>
+              </div>
+
+
+              {/* <div className="grid grid-cols-5 gap-6 my-6">
                 <div className="px-3 pb-1 bg-[#FEF4E8] rounded-lg border-[#FDDEB8] border">
                   <h2 className="text-yellow-500 font-semibold py-2">Initial Review</h2>
                   <p className="text-2xl font-semibold">{initialReviewCount}</p>
@@ -239,10 +268,10 @@ const Dashboard = () => {
                   <h2 className="text-purple-500 py-2 font-semibold">Total Reports</h2>
                   <p className="text-2xl font-semibold">{totalCount}</p>
                 </div>
-              </div>
+              </div> */}
 
               {/* Reports Table */}
-              <div className="bg-white rounded-xl shadow-md">
+              <div className="bg-white rounded-xl shadow-md overflow-auto ">
                 <div > {/* Adjust height as needed */}
                   <table className="min-w-full border-black rounded-xl">
                     <thead className="bg-[#E9E9E9] text-[#79747E] text-sm h-10">
@@ -284,7 +313,18 @@ const Dashboard = () => {
                                 <div className="font-medium text-sm">{report?.submission}</div>
                                 <div className="text-sm text-gray-500">{report?.time}</div>
                               </div>
-                            </td>                          <td className={`py-2 px-3 border-b text-left ${report?.statusColor}`}>{report?.status}</td>
+                            </td>
+                            <td className={`py-2 px-3 border-b text-left ${report?.status === 'final_approval'
+                              ? 'text-red-500'
+                              : report?.status === 'initial_review'
+                                ? 'text-yellow-500'
+                                : report?.status === 'completed'
+                                  ? 'text-green-500'
+                                  : 'text-gray-500'}`}>
+                              {report?.status}
+                            </td>
+
+                            {/* <td className={`py-2 px-3 border-b text-left ${report?.status}`}>{report?.status}</td> */}
                             <td className="py-2 px-1 border-b text-left">
                               <div
                                 className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
@@ -329,7 +369,7 @@ const Dashboard = () => {
 
 
       </div>
-    </div>
+    </div >
   );
 };
 

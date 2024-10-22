@@ -50,7 +50,7 @@ function Editpage() {
     // console.log("userData===>",userData);
 
     useEffect(() => {
-    // console.log('-------------->');
+        // console.log('-------------->');
 
         fetchdata();
         // eslint-disable-next-line
@@ -173,7 +173,7 @@ function Editpage() {
                     <form onSubmit={HandleSubmit} className="h-full">
                         <div className="border-[1px] border-[#fff] rounded-3xl   bg-[#fff] h-full">
                             <h2 className="text-2xl font-bold tracking-tight text-[#0C0F14] sm:text-32">
-                                Edit Profile 
+                                Edit Profile
                             </h2>
                             <div className="pt-6 flex flex-col sm:flex-row items-center gap-4">
                                 {imageLodaing ? (
@@ -269,7 +269,9 @@ function Editpage() {
                             </div>
                             <div className="pt-6 flex flex-col lg:flex-row gap-5 mr-5">
                                 <div className="text-sm font-semibold flex flex-col lg:w-1/2">
-                                    <label htmlFor="">{`Phone Number (Optional)`}</label>
+                                    <label htmlFor="">
+                                        Phone Number <span className="text-purple-400">(Optional)</span>
+                                    </label>
                                     <input
                                         value={userData?.phoneNo}
                                         onChange={handleChange}

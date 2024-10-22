@@ -191,13 +191,13 @@ function ChangePassword() {
                       Cancel
                     </button>
                   </div>
-                  <div className="text-sm font-semibold flex flex-col w-32">
+                  <div className="text-sm font-semibold flex flex-col w-36">
                     <button
                       disabled={isLoading}
                       type="submit"
-                      className="bg-primaryPurple text-white hover:bg-opacity-90 py-3 px-2 rounded-lg disabled:opacity-50 "
+                      className="bg-primaryPurple text-white hover:bg-opacity-90 py-3 px-2 rounded-lg disabled:opacity-50 text-sm "
                     >
-                      Save Changes
+                      Update Password
                     </button>
                   </div>
                 </div>

@@ -12,10 +12,10 @@ function PasswordInput({ value, onChange, placeholder, ...otherProps }) {
         className='p-4 w-full outline-none border-[1px] border-[#D7D9E4] rounded-lg bg-transparent mt-2' placeholder={placeholder} type={showPassword?`text`:'password'} />
         <span className='absolute right-2 top-[22px] cursor-pointer' onClick={()=>setShowPassword(!showPassword)}>
         {showPassword ? (
-                 <VisibilityIcon />
+                 <VisibilityIcon style={{ color: '#79747E' }} />
             ) : (
            
-              <VisibilityOffIcon />
+              <VisibilityOffIcon  style={{ color: '#79747E' }}/>
             )}
         </span>
     </div>

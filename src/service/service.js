@@ -262,7 +262,7 @@ export const submitReport = async (status, report, reportId) => {
     };
 
     const data = {
-      status: status, // Status variable
+      // status: status, // Status variable
       report: report  // Report in Markdown format
     };
 
