@@ -15,6 +15,7 @@ import Searchbar from "../../component/PasswordInput/Searchbar";
 import SideBar from "../../component/Setting/SideBar";
 import moment from 'moment';
 import { url } from '../../environment'
+import { Oval } from 'react-loader-spinner';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -40,23 +41,24 @@ const Dashboard = () => {
   const [searchText, setSearchText] = useState('');
   const [Data, setData] = useState([]);
   const [stats, setstats] = useState([]);
-
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const currentPath = window.location.pathname;
   const userData = localStorage.getItem("user_token");
+  const [filteredData, setFilteredData] = useState([]);
+  const [selectedOption, setSelectedOption] = useState('totalReports');
+  const [status, setstatus] = useState('all');
 
-  // console.log(Data?.logo);
+  // console.log(userData);
   useEffect(() => {
     fetchData();
 
-  }, []);
+  }, [selectedOption, status]);
   const fetchData = () => {
+    setLoading(true)
     const myHeaders = new Headers();
-    myHeaders.append(
-      "Authorization",
-      `Bearer ${userData}`
-    );
+    myHeaders.append("Authorization", `Bearer ${userData}`);
 
     const requestOptions = {
       method: "GET",
@@ -64,33 +66,63 @@ const Dashboard = () => {
       redirect: "follow"
     };
 
-    fetch(
-      `${url}api/reviewer/report/reqs`,
-      requestOptions
-    )
+    // Base URL
+    let apiUrl = `${url}api/reviewer/report/reqs`;
+
+    // Adjust selectedOption and status based on the given conditions
+    const requestedBy = selectedOption === "totalReports" ? null : selectedOption;
+    const filteredStatus = status === "all" ? null : status;
+
+    // Build query parameters if requestedBy or filteredStatus are provided
+    const queryParams = [];
+    if (filteredStatus) queryParams.push(`requestedBy=${filteredStatus}`);
+    if (requestedBy) queryParams.push(`status=${requestedBy}`);
+
+    // Append query parameters to the URL if they exist
+    if (queryParams.length > 0) {
+      apiUrl += `?${queryParams.join('&')}`;
+    }
+    // console.log('apiUrl',apiUrl);
+
+    // Fetch data with the constructed URL
+    fetch(apiUrl, requestOptions)
       .then((response) => response.json()) // Assuming the API returns JSON
       .then((result) => {
         console.log(result);
-        setData(result?.body?.ODRs); // Save the result in state
-        setFilteredData(result?.body?.ODRs);
-        setstats(result?.body?.stats)
-
+        setData(result?.body?.ODRs); // Save ODRs in state
+        setFilteredData(result?.body?.ODRs); // Save filtered data
+        setstats(result?.body?.stats); // Save stats in state
+        setLoading(false)
 
       })
-      .catch((error) => console.error("Error:", error));
-  };
-  // Initialize variables for each stat and total count
-  const initialReviewCount = stats.find(stat => stat._id === "initial_review")?.count || 0;
-  const finalReviewCount = stats.find(stat => stat._id === "final_review")?.count || 0;
-  const completedCount = stats.find(stat => stat._id === "completed")?.count || 0;
-  const report_generationcount = stats.find(stat => stat._id === "report_generation")?.count || 0;
+      .catch((error) => {
+        setLoading(false)
+        console.error("Error:", error)
 
-  // Calculate total count
-  const totalCount = stats.reduce((acc, stat) => acc + stat.count, 0);
-  console.log("Initial Review Count:", userData);
-  // console.log("Final Review Count:", finalReviewCount);
-  // console.log("Completed Count:", completedCount);
-  // console.log("Total Count:", totalCount);
+      });
+  };
+
+
+  const handleSelect = (option) => {
+    setSelectedOption(option);
+  };
+  // Access each stat directly from the stats object
+const initialReviewCount = stats?.initial_review || 0;
+const finalReviewCount = stats?.final_approval || 0;
+const completedCount = stats?.completed || 0;
+const report_generationcount = stats?.report_generation || 0;
+
+// Use the total_reports property for the total count
+const totalCount = stats?.total_reports || 0;
+
+  // Initialize variables for each stat and total count
+  // const initialReviewCount = stats?.find(stat => stat._id === "initial_review")?.count || 0;
+  // const finalReviewCount = stats?.find(stat => stat._id === "final_review")?.count || 0;
+  // const completedCount = stats?.find(stat => stat._id === "completed")?.count || 0;
+  // const report_generationcount = stats?.find(stat => stat._id === "report_generation")?.count || 0;
+ 
+  // const totalCount = stats?.reduce((acc, stat) => acc + stat.count, 0);
+ 
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
@@ -105,12 +137,11 @@ const Dashboard = () => {
   });
 
 
-  const [filteredData, setFilteredData] = useState([]);
 
 
   const handleSearch = (searchQuery) => {
     setFilteredData(Data)
-    const filtered = Data.filter((item) =>
+    const filtered = Data?.filter((item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.symbol.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -198,6 +229,20 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <div className="flex-1  overflow-y-auto  ">
+        {loading && (
+          <div className="flex justify-center mt-10">
+            <Oval
+              height={30}
+              width={30}
+              color="#7147B4"
+              visible={true}
+              ariaLabel="oval-loading"
+              secondaryColor="#7147B4"
+              strokeWidth={5}
+              strokeWidthSecondary={2}
+            />
+          </div>
+        )}
         {
           selected === 'Home' && (
             <div className="flex-1 p-6 bg-white rounded-3xl m-10">
@@ -219,9 +264,54 @@ const Dashboard = () => {
               </div>
 
               {/* <h1 className="text-2xl font-bold">Home</h1> */}
-
-              {/* Status Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 my-6 mt-14">
+                <div
+                  className={`px-3 pb-1 rounded-lg border ${selectedOption === 'initial_review' ? 'border-[#7147B4]' : 'border-[#FDDEB8]'
+                    } bg-[#FEF4E8] cursor-pointer`}
+                  onClick={() => handleSelect('initial_review')}
+                >
+                  <h2 className="text-yellow-500 font-semibold py-2">Initial Review</h2>
+                  <p className="text-2xl font-semibold">{initialReviewCount}</p>
+                </div>
+
+                <div
+                  className={`px-3 pb-1 rounded-lg border ${selectedOption === 'final_review' ? 'border-[#7147B4]' : 'border-[#F0B0B0]'
+                    } bg-[#FAE6E6] cursor-pointer`}
+                  onClick={() => handleSelect('final_approval')}
+                >
+                  <h2 className="text-red-500 py-2 font-semibold">Final Review</h2>
+                  <p className="text-2xl font-semibold">{finalReviewCount}</p>
+                </div>
+
+                <div
+                  className={`px-3 pb-1 rounded-lg border ${selectedOption === 'report_generation' ? 'border-[#7147B4]' : 'border-[#ABA3B5]'
+                    } bg-[#e9e9e9] cursor-pointer`}
+                  onClick={() => handleSelect('report_generation')}
+                >
+                  <h2 className="text-gray-500 py-2 font-semibold">Report Generation</h2>
+                  <p className="text-2xl font-semibold">{report_generationcount}</p>
+                </div>
+
+                <div
+                  className={`px-3 pb-1 rounded-lg border ${selectedOption === 'completed' ? 'border-[#7147B4]' : 'border-[#B3DBBC]'
+                    } bg-[#E6F4E9] cursor-pointer`}
+                  onClick={() => handleSelect('completed')}
+                >
+                  <h2 className="text-green-500 py-2 font-semibold">Completed</h2>
+                  <p className="text-2xl font-semibold">{completedCount}</p>
+                </div>
+
+                <div
+                  className={`px-3 pb-1 rounded-lg border ${selectedOption === 'totalReports' ? 'border-[#7147B4]' : 'border-[#D3C6E8]'
+                    } bg-[#F1EDF8] cursor-pointer`}
+                  onClick={() => handleSelect('totalReports')}
+                >
+                  <h2 className="text-purple-500 py-2 font-semibold">Total Reports</h2>
+                  <p className="text-2xl font-semibold">{totalCount}</p>
+                </div>
+              </div>
+              {/* Status Cards */}
+              {/* <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 my-6 mt-14">
                 <div className="px-3 pb-1 bg-[#FEF4E8] rounded-lg border-[#FDDEB8] border">
                   <h2 className="text-yellow-500 font-semibold py-2">Initial Review</h2>
                   <p className="text-2xl font-semibold">{initialReviewCount}</p>
@@ -243,32 +333,22 @@ const Dashboard = () => {
                   <h2 className="text-purple-500 py-2 font-semibold">Total Reports</h2>
                   <p className="text-2xl font-semibold">{totalCount}</p>
                 </div>
+              </div> */}
+
+              <div className="flex justify-start py-4">
+                <div className="w-[210px] shadow-lg bg-white rounded-md p-2 border border-gray-300 hover:border-purple-500">
+                  <select
+                    className="w-full text-sm border-none outline-none bg-transparent text-center"
+                    value={status}
+                    onChange={(e) => setstatus(e.target.value)}
+                  >
+                    <option value="all">All</option>
+                    <option value="user">User</option>
+                    <option value="client">Client</option>
+                  </select>
+                </div>
               </div>
 
-
-              {/* <div className="grid grid-cols-5 gap-6 my-6">
-                <div className="px-3 pb-1 bg-[#FEF4E8] rounded-lg border-[#FDDEB8] border">
-                  <h2 className="text-yellow-500 font-semibold py-2">Initial Review</h2>
-                  <p className="text-2xl font-semibold">{initialReviewCount}</p>
-                </div>
-                <div className="px-3 pb-1 rounded-lg border border-[#F0B0B0] bg-[#FAE6E6]">
-                  <h2 className="text-red-500 py-2 font-semibold ">Final Review</h2>
-                  <p className="text-2xl font-semibold ">{finalReviewCount}</p>
-                </div>
-                <div className="px-3 pb-1 bg-[#E6F4E9] border border-[#B3DBBC] rounded-lg">
-                  <h2 className="text-green-500 py-2 font-semibold">Report Generation	
-                  </h2>
-                  <p className="text-2xl font-semibold">{report_generationcount}</p>
-                </div>
-                <div className="px-3 pb-1 bg-[#E6F4E9] border border-[#B3DBBC] rounded-lg">
-                  <h2 className="text-green-500 py-2 font-semibold">Completed</h2>
-                  <p className="text-2xl font-semibold">{completedCount}</p>
-                </div>
-                <div className="px-3 pb-1 bg-[#F1EDF8] border border-[#D3C6E8] rounded-lg">
-                  <h2 className="text-purple-500 py-2 font-semibold">Total Reports</h2>
-                  <p className="text-2xl font-semibold">{totalCount}</p>
-                </div>
-              </div> */}
 
               {/* Reports Table */}
               <div className="bg-white rounded-xl shadow-md overflow-auto ">
@@ -285,14 +365,20 @@ const Dashboard = () => {
                     </thead>
                     <tbody className="text-[#000]">
                       {filteredData?.map((report, index) => {
-                        const createdAt = report?.createdAt;
-                        // console.log('create*********',createdAt);
-
-
-                        const date = new Date(createdAt);
-                        const formattedDate = date.toISOString().split('T')[0]; // Gets '2024-09-21'
-                        const formattedTime = moment(createdAt).utc().format('h:mm A'); // Converts to '8:10 PM'
-
+                       const createdAt = report?.createdAt;
+                       const completedAt = report?.completedAt;
+                       
+                       const formattedDate = createdAt ? new Date(createdAt).toISOString().split('T')[0] : 'N/A';
+                       const formattedTime = createdAt ? moment(createdAt).utc().format('h:mm A') : 'N/A';
+                       
+                       const completedDate = completedAt ? new Date(completedAt).toISOString().split('T')[0] : 'N/A';
+                       const completedTime = completedAt ? moment(completedAt).utc().format('h:mm A') : 'N/A';
+                       
+                      //  console.log('Created Date:', formattedDate);
+                      //  console.log('Created Time:', formattedTime);
+                      //  console.log('Completed Date:', completedDate);
+                      //  console.log('Completed Time:', completedTime);
+                       
                         return (
                           <tr key={index} className="h-20">
                             <td className="py-2 px-3 border-b text-left flex items-center gap-2 h-20">
@@ -310,8 +396,8 @@ const Dashboard = () => {
                             </td>
                             <td className="py-2 px-3 border-b text-left items-center gap-2">
                               <div>
-                                <div className="font-medium text-sm">{report?.submission}</div>
-                                <div className="text-sm text-gray-500">{report?.time}</div>
+                              <div className="font-medium text-sm">{completedDate}</div>
+                              <div className="text-sm text-gray-500">{completedTime}</div>
                               </div>
                             </td>
                             <td className={`py-2 px-3 border-b text-left ${report?.status === 'final_approval'

@@ -16,6 +16,7 @@ import SideBar from "../../component/Setting/SideBar";
 import Editpage from "../EditPage/Editpage";
 import TextEditor from '../../component/TextEditor/TextEditor';
 import Editor2 from '../../component/QuillEditor/Editor';
+import { Oval } from 'react-loader-spinner';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -41,6 +42,7 @@ function Detailpage() {
   const [markdown, setMarkdown] = useState('');
   const [status, setStatus] = useState('completed');
   const [counter, setCounter] = useState(0);       // Counter for triggering data re-fetch
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const currentPath = window.location.pathname;
@@ -68,26 +70,32 @@ function Detailpage() {
     };
 
     try {
+      setLoading(true)
       const response = await fetch(`${url}api/reviewer/report/reqs/${reportId}`, requestOptions);
       const result = await response.json(); // Assuming the API returns JSON data
       // console.log("=========>",result?.body.ODR);
       setReportdata(result?.body?.ODR)
+      setLoading(false)
       return result;
     } catch (error) {
+      setLoading(false)
       console.error('Error fetching report data:', error);
     }
   };
   // console.log("--->++++,",markdown);
   const handleReportSave = async () => {
     try {
+      setLoading(true);
       // Call the reportSave function and pass the token and report content
       const result = await reportSave(markdown, reportId);
       if (result?.success === true) {
+        setLoading(false)
         setCounter(prevCounter => prevCounter + 1); // Increment the counter
         toast.success('Report saved successfully!', { position: "top-center" });
       }
-      console.log('Report saved:', result);
+      // console.log('Report saved:', result);
     } catch (error) {
+      setLoading(false)
       console.error('Error saving report:', error);
       toast.error('Failed to save the report.', { position: "top-center" }); // Display error toast
 
@@ -95,15 +103,20 @@ function Detailpage() {
   };
   const handleReportSubmit = async () => {
     try {
+      setLoading(true)
+
       // Call the reportSave function and pass the token and report content
       const result = await submitReport(status, markdown, reportId);
       if (result?.success === true) {
+        setLoading(false)
+
         setCounter(prevCounter => prevCounter + 1); // Increment the counter
         toast.success('Report submitted status successfully!', { position: "top-center" }); // Display success toast
 
       }
-      console.log('Report saved:', result);
-    } catch (error) {
+     } catch (error) {
+      setLoading(false)
+
       console.error('Error saving report:', error);
       toast.error('Failed to submit status the report.', { position: "top-center" }); // Display error toast
 
@@ -117,14 +130,28 @@ function Detailpage() {
       {/* Main Content */}
 
       <div className="flex-1  overflow-y-auto  ">
-        <div className="p-6 bg-white rounded-3xl m-10 ">
+        < div className="p-6 bg-white rounded-3xl m-10 ">
+          {loading && (
+            <div className="flex justify-center mt-10">
+              <Oval
+                height={30}
+                width={30}
+                color="#7147B4"
+                visible={true}
+                ariaLabel="oval-loading"
+                secondaryColor="#7147B4"
+                strokeWidth={5}
+                strokeWidthSecondary={2}
+              />
+            </div>
+          )}
           <div className="flex justify-between items-center">
             <div className="flex flex-row items-center space-x-2 ml-2">
               <h1 className="text-2xl font-bold">{reportdata?.name}</h1>
               <h1 className="text-sm mt-2 text-gray-500">{reportdata?.symbol}</h1>
             </div>
 
-            <div className="flex items-center gap-4">
+            {/* <div className="flex items-center gap-4">
               <button
                 className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
               // onClick={() => handleView(report)}
@@ -133,7 +160,7 @@ function Detailpage() {
               </button>
               <Searchbar />
 
-            </div>
+            </div> */}
           </div>
           <div className="flex flex-wrap items-center justify-end py-4 gap-2 w-full">
             <label className="text-gray-700 flex items-center gap-2">
@@ -187,7 +214,7 @@ function Detailpage() {
 
       </div>
 
-    </div>
+    </div >
   );
 }
 
