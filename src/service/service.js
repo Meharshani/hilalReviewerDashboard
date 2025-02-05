@@ -239,9 +239,9 @@ export const UpdateUserSettings = async (data) => {
     };
 
     const response = await axios.put(`/user-setting/save-chat-history`, data,
-       {
-      headers
-    });
+      {
+        headers
+      });
 
     return response.data;
   }
@@ -251,23 +251,71 @@ export const UpdateUserSettings = async (data) => {
 };
 
 // Function to submit the report with status and report content
-export const submitReport = async (status, report, reportId) => {
-  const token = localStorage.getItem('user_token')
+export const submitReport = async (report, reportId, shariahStatus, reportData) => {
+  // console.log(' >>check', reportData);
+  
+  const token = localStorage.getItem("user_token");
 
   try {
     const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     };
 
-    const data = {
-      // status: status, // Status variable
-      report: report  // Report in Markdown format
+    // Prepare data object dynamically
+    const data = {};
+
+    if (report) {
+      data.report = report; // Only include report if it's not empty
+    }
+
+    if (shariahStatus) {
+      data.shariahStatus = shariahStatus; // Only include shariahStatus if it's not empty
+    }
+
+    // If no valid data, don't send request
+    if (Object.keys(data).length === 0) {
+      console.log("No valid data to send");
+      return;
+    }
+
+    const response = await axios.post(`api/reviewer/report/reqs/submit/${reportId}?requestedBy=${reportData?.requestedBy}`, data, { headers });
+
+    return response.data;
+  } catch (error) {
+    handleCatch(error);
+    return { success: false }; // Return failure status in case of error
+  }
+};
+
+
+export const reportSave = async (report, reportId, shariahStatus, reportData) => {
+  // console.log(reportData);
+
+  const token = localStorage.getItem('user_token');
+
+  try {
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
     };
+
+    // Prepare request body only with non-empty values
+    const data = {};
+    if (report) data.report = report;
+    if (shariahStatus) data.shariahStatus = shariahStatus;
+    // console.log(data);
+
+    // If no valid data, don't send request
+    if (Object.keys(data).length === 0) {
+      console.log("No valid data to send");
+      return;
+    }
 
     const response = await axios.put(
-      `api/reviewer/report/reqs/${reportId}`,
+      `api/reviewer/report/reqs/${reportId}?requestedBy=${reportData?.requestedBy}`,
       data,
       { headers }
     );
@@ -278,28 +326,3 @@ export const submitReport = async (status, report, reportId) => {
   }
 };
 
-// Function to save the report without the status
-export const reportSave = async (report, reportId) => {
-  const token = localStorage.getItem('user_token')
-
-  try {
-    const headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
-
-    const data = {
-      report: report  // Only report variable is sent
-    };
-
-    const response = await axios.put(
-      `api/reviewer/report/reqs/${reportId}`,data,
-      { headers }
-    );
-
-    return response.data;
-  } catch (error) {
-    handleCatch(error);
-  }
-};

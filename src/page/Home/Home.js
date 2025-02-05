@@ -50,7 +50,8 @@ const Dashboard = () => {
   const [selectedOption, setSelectedOption] = useState('totalReports');
   const [status, setstatus] = useState('all');
 
-  // console.log(userData);
+
+  // console.log(statusType);
   useEffect(() => {
     fetchData();
 
@@ -88,7 +89,7 @@ const Dashboard = () => {
     fetch(apiUrl, requestOptions)
       .then((response) => response.json()) // Assuming the API returns JSON
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         setData(result?.body?.ODRs); // Save ODRs in state
         setFilteredData(result?.body?.ODRs); // Save filtered data
         setstats(result?.body?.stats); // Save stats in state
@@ -102,27 +103,26 @@ const Dashboard = () => {
       });
   };
 
-
   const handleSelect = (option) => {
     setSelectedOption(option);
   };
   // Access each stat directly from the stats object
-const initialReviewCount = stats?.initial_review || 0;
-const finalReviewCount = stats?.final_approval || 0;
-const completedCount = stats?.completed || 0;
-const report_generationcount = stats?.report_generation || 0;
+  const initialReviewCount = stats?.initial_review || 0;
+  const finalReviewCount = stats?.final_approval || 0;
+  const completedCount = stats?.completed || 0;
+  const report_generationcount = stats?.report_generation || 0;
 
-// Use the total_reports property for the total count
-const totalCount = stats?.total_reports || 0;
+  // Use the total_reports property for the total count
+  const totalCount = stats?.total_reports || 0;
 
   // Initialize variables for each stat and total count
   // const initialReviewCount = stats?.find(stat => stat._id === "initial_review")?.count || 0;
   // const finalReviewCount = stats?.find(stat => stat._id === "final_review")?.count || 0;
   // const completedCount = stats?.find(stat => stat._id === "completed")?.count || 0;
   // const report_generationcount = stats?.find(stat => stat._id === "report_generation")?.count || 0;
- 
+
   // const totalCount = stats?.reduce((acc, stat) => acc + stat.count, 0);
- 
+
   const handleSearchChange = (e) => {
     setSearchText(e.target.value);
   };
@@ -148,9 +148,10 @@ const totalCount = stats?.total_reports || 0;
     setFilteredData(filtered);
   };
   const handleView = (report) => {
+    // console.log(">>>>>>>>>>>>>>>>>,",report);
 
     navigate("/home/detailpage", {
-      state: { reportId: report._id, reportName: report?.name },
+      state: { reportId: report._id, reportName: report?.name, reportstatus: report?.status, reportDatasend: report },
     });
 
   }
@@ -334,8 +335,8 @@ const totalCount = stats?.total_reports || 0;
                   <p className="text-2xl font-semibold">{totalCount}</p>
                 </div>
               </div> */}
-
-              <div className="flex justify-start py-4">
+              <div className="flex justify-start py-4 space-x-4">
+                {/* First Dropdown */}
                 <div className="w-[210px] shadow-lg bg-white rounded-md p-2 border border-gray-300 hover:border-purple-500">
                   <select
                     className="w-full text-sm border-none outline-none bg-transparent text-center"
@@ -347,7 +348,23 @@ const totalCount = stats?.total_reports || 0;
                     <option value="client">Client</option>
                   </select>
                 </div>
+
+
               </div>
+
+              {/* <div className="flex justify-start py-4">
+                <div className="w-[210px] shadow-lg bg-white rounded-md p-2 border border-gray-300 hover:border-purple-500">
+                  <select
+                    className="w-full text-sm border-none outline-none bg-transparent text-center"
+                    value={status}
+                    onChange={(e) => setstatus(e.target.value)}
+                  >
+                    <option value="all">All</option>
+                    <option value="user">User</option>
+                    <option value="client">Client</option>
+                  </select>
+                </div>
+              </div> */}
 
 
               {/* Reports Table */}
@@ -365,20 +382,20 @@ const totalCount = stats?.total_reports || 0;
                     </thead>
                     <tbody className="text-[#000]">
                       {filteredData?.map((report, index) => {
-                       const createdAt = report?.createdAt;
-                       const completedAt = report?.completedAt;
-                       
-                       const formattedDate = createdAt ? new Date(createdAt).toISOString().split('T')[0] : 'N/A';
-                       const formattedTime = createdAt ? moment(createdAt).utc().format('h:mm A') : 'N/A';
-                       
-                       const completedDate = completedAt ? new Date(completedAt).toISOString().split('T')[0] : 'N/A';
-                       const completedTime = completedAt ? moment(completedAt).utc().format('h:mm A') : 'N/A';
-                       
-                      //  console.log('Created Date:', formattedDate);
-                      //  console.log('Created Time:', formattedTime);
-                      //  console.log('Completed Date:', completedDate);
-                      //  console.log('Completed Time:', completedTime);
-                       
+                        const createdAt = report?.createdAt;
+                        const completedAt = report?.completedAt;
+
+                        const formattedDate = createdAt ? new Date(createdAt).toISOString().split('T')[0] : 'N/A';
+                        const formattedTime = createdAt ? moment(createdAt).utc().format('h:mm A') : 'N/A';
+
+                        const completedDate = completedAt ? new Date(completedAt).toISOString().split('T')[0] : 'N/A';
+                        const completedTime = completedAt ? moment(completedAt).utc().format('h:mm A') : 'N/A';
+
+                        //  console.log('Created Date:', formattedDate);
+                        //  console.log('Created Time:', formattedTime);
+                        //  console.log('Completed Date:', completedDate);
+                        //  console.log('Completed Time:', completedTime);
+
                         return (
                           <tr key={index} className="h-20">
                             <td className="py-2 px-3 border-b text-left flex items-center gap-2 h-20">
@@ -396,8 +413,8 @@ const totalCount = stats?.total_reports || 0;
                             </td>
                             <td className="py-2 px-3 border-b text-left items-center gap-2">
                               <div>
-                              <div className="font-medium text-sm">{completedDate}</div>
-                              <div className="text-sm text-gray-500">{completedTime}</div>
+                                <div className="font-medium text-sm">{completedDate}</div>
+                                <div className="text-sm text-gray-500">{completedTime}</div>
                               </div>
                             </td>
                             <td className={`py-2 px-3 border-b text-left ${report?.status === 'final_approval'
@@ -413,12 +430,13 @@ const totalCount = stats?.total_reports || 0;
                             {/* <td className={`py-2 px-3 border-b text-left ${report?.status}`}>{report?.status}</td> */}
                             <td className="py-2 px-1 border-b text-left">
                               <div
-                                className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300"
+                                className="flex items-center space-x-2 text-[#79747E] hover:bg-gray-100 rounded-md p-2 transition duration-300 cursor-pointer"
                                 onClick={() => handleView(report)}
                               >
                                 <img src={eye} alt={report.name} className="w-5 h-4 rounded-full" />
-                                <span className="hover:text-blue-700">View</span>
+                                <span className="hover:text-blue-700 cursor-pointer">View</span>
                               </div>
+
                             </td>
                           </tr>)
                       }
